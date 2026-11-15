@@ -1,0 +1,5 @@
+services:
+  offer-lens:
+    build: .
+    ports:
+      - "8077:8000"

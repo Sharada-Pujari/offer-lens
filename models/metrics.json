@@ -1,0 +1,41 @@
+{
+  "records": 75,
+  "counts": {
+    "risky": 28,
+    "credible": 23,
+    "unclear": 24
+  },
+  "holdout_size": 19,
+  "holdout_macro_f1": 1.0,
+  "holdout_accuracy": 1.0,
+  "labels": [
+    "risky",
+    "unclear",
+    "credible"
+  ],
+  "confusion_matrix": [
+    [
+      7,
+      0,
+      0
+    ],
+    [
+      0,
+      6,
+      0
+    ],
+    [
+      0,
+      0,
+      6
+    ]
+  ],
+  "per_label_f1": {
+    "risky": 1.0,
+    "unclear": 1.0,
+    "credible": 1.0
+  },
+  "unseen_messages": 8,
+  "unseen_macro_f1": 1.0,
+  "unseen_correct": 8
+}
