@@ -60,23 +60,10 @@ button, textarea, input { font: inherit; color: inherit; }
   letter-spacing: -0.02em;
 }
 
-.mark {
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--ink);
-  border-radius: 50%;
-  position: relative;
-}
-
-.mark::after {
-  content: "";
-  position: absolute;
-  width: 7px;
-  height: 2px;
-  background: var(--risk);
-  right: -6px;
-  bottom: -1px;
-  transform: rotate(42deg);
+.logo {
+  width: 36px;
+  height: 36px;
+  display: block;
 }
 
 .top-note, .kicker, .count, .chat-context { color: var(--muted); }
@@ -240,6 +227,8 @@ blockquote {
 }
 
 .support blockquote { border-left-color: var(--ok); }
+
+.signal.medium blockquote { border-left-color: var(--mid); }
 
 .chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0; list-style: none; }
 

@@ -9,6 +9,21 @@ import joblib
 from app.decide import LABELS
 
 # Fragments that show up in almost every message. They are weak to display.
+WEAK_WORDS = {
+    "on",
+    "in",
+    "of",
+    "to",
+    "at",
+    "by",
+    "or",
+    "as",
+    "be",
+    "is",
+    "it",
+    "an",
+    "a",
+}
 SKIP_CUES = {
     "the",
     "and",
@@ -36,6 +51,13 @@ SKIP_CUES = {
     "can",
     "all",
 }
+
+
+def _keep_cue(term: str) -> bool:
+    if term in SKIP_CUES or len(term) < 3 or not any(character.isalpha() for character in term):
+        return False
+    parts = term.split()
+    return any(part not in WEAK_WORDS and part not in SKIP_CUES for part in parts)
 
 
 class Predictor:
@@ -73,7 +95,7 @@ class Predictor:
         ranked: list[tuple[float, str]] = []
         for index in matrix.nonzero()[1]:
             term = str(names[index])
-            if term in SKIP_CUES or not any(character.isalpha() for character in term) or len(term) < 3:
+            if not _keep_cue(term):
                 continue
             ranked.append((float(weights[index] * matrix[0, index]), term))
         ranked.sort(reverse=True)

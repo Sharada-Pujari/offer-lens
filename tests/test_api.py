@@ -29,6 +29,14 @@ def request(method: str, path: str, json=None) -> httpx.Response:
     return anyio.run(_call)
 
 
+def test_filler_pairs_are_not_displayed_phrases():
+    from app.predictor import _keep_cue
+
+    assert not _keep_cue("on the")
+    assert not _keep_cue("in the")
+    assert _keep_cue("cgpa")
+
+
 def test_displayed_phrases_skip_weak_fragments():
     _label, _confidence, _probabilities, cues = app.state.predictor.predict(SCAM)
     assert "com" not in cues

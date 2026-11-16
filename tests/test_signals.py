@@ -58,6 +58,29 @@ def test_rupees_and_national_id_are_quoted():
     assert "identity_documents" in found
 
 
+DRIVE = (
+    "L&T Technology Services opened its GET Off Campus Drive 2026 through Superset. "
+    "Role: Associate Engineer Trainee. CTC: ₹4 LPA. packege : ₹25,000/month for the first 3 months. "
+    "Locations: Hyderabad, Pune, Mumbai, Vadodara and Delhi. "
+    "Eligibility Criteria: Minimum 60% or 6.75 CGPA in 10th, 12th and Graduation. "
+    "No active backlogs. Selection Process: 1. Technical Interview 2. HR Interview. "
+    "Mandatory undertaking/bond of ₹2 Lakhs for 2 years and 9 months."
+)
+
+
+def test_stipend_and_ctc_are_not_a_fee():
+    risks, supports = extract_signals(DRIVE)
+    risk_ids = {item["id"]: item["severity"] for item in risks}
+    assert "upfront_payment" not in risk_ids
+    assert risk_ids["service_bond"] == "medium"
+    assert "25,000" not in next(item["excerpt"] for item in risks if item["id"] == "service_bond")
+    support_ids = {item["id"] for item in supports}
+    assert {"compensation_stated", "eligibility_stated", "named_rounds", "careers_portal"} <= support_ids
+    label, note = decide("credible", risks)
+    assert label == "credible"
+    assert note is None
+
+
 def test_model_label_stands_when_nothing_high_is_quoted():
     label, note = decide("credible", [])
     assert label == "credible"

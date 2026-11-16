@@ -160,7 +160,7 @@ function signalBlock(title, items, className) {
     <div class="group ${className}">
       <h3>${title}</h3>
       ${items.map((item) => `
-        <article class="signal">
+        <article class="signal ${escapeHtml(item.severity || "")}">
           <h3>${escapeHtml(item.title)}</h3>
           <blockquote>${escapeHtml(item.excerpt)}</blockquote>
           <p>${escapeHtml(item.detail)}</p>

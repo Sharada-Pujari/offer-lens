@@ -87,6 +87,11 @@ def checklist(risk_signals: list[dict]) -> list[dict]:
             "Ignore guaranteed packages and tasks that need a payment before you can withdraw.",
             bool(present & {"guaranteed_outcome", "task_or_withdrawal"}),
         ),
+        (
+            "bond",
+            "Read any service bond: the amount, the duration, and what happens if you leave.",
+            "service_bond" in present,
+        ),
     ]
     return [
         {"id": key, "text": text, "emphasis": emphasis}

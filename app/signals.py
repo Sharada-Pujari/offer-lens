@@ -47,7 +47,6 @@ PATTERNS: tuple[Pattern, ...] = (
             r"|refundable (?:fee|deposit)"
             r"|(?:pay|deposit|transfer|send)\s+(?:rs\.?|inr|₹)\s?\d"
             r"|fees?\s+of\s+(?:rs\.?|inr|₹)?\s?\d"
-            r"|₹\s?\d[\d,]*"
             r"|\d[\d,]*\s*rupees"
             r"|joining kit"
             r"|token amount"
@@ -83,6 +82,14 @@ PATTERNS: tuple[Pattern, ...] = (
             r"|product-rating",
             re.I,
         ),
+        kind="risk",
+    ),
+    Pattern(
+        id="service_bond",
+        severity="medium",
+        title="Mentions a service bond",
+        detail="A bond is a promise to stay, or to pay if you leave. It is not a registration fee. Read the amount and the duration before you accept.",
+        regex=re.compile(r"\bbond\b|\bundertaking\b", re.I),
         kind="risk",
     ),
     Pattern(
@@ -158,7 +165,8 @@ PATTERNS: tuple[Pattern, ...] = (
         title="Names the rounds",
         detail="A test and interview steps are what a normal process looks like.",
         regex=re.compile(
-            r"technical round|online test|hr round|aptitude|pre-placement",
+            r"technical round|technical interview|online test|hr round|hr interview|"
+            r"selection process|aptitude|pre-placement",
             re.I,
         ),
         kind="support",
@@ -190,6 +198,17 @@ PATTERNS: tuple[Pattern, ...] = (
             r"careers (?:page|portal)"
             r"|superset"
             r"|college email",
+            re.I,
+        ),
+        kind="support",
+    ),
+    Pattern(
+        id="compensation_stated",
+        severity="info",
+        title="States the pay",
+        detail="CTC, a stipend, or a monthly amount describes the role. It is not a fee.",
+        regex=re.compile(
+            r"\b(?:ctc|stipend|salary|lpa|package|packege)\b|/month|per month",
             re.I,
         ),
         kind="support",
@@ -226,13 +245,39 @@ def _from_match(pattern: Pattern, text: str, match: re.Match[str]) -> dict:
     }
 
 
+PAY_CONTEXT = re.compile(
+    r"ctc|stipend|salary|package|packege|\blpa\b|per month|/month|a month|remuneration|in[- ]hand",
+    re.I,
+)
+FEE_CONTEXT = re.compile(
+    r"\bfees?\b|deposit|joining kit|token amount|\bupi\b|payment|refundable|\bqr\b",
+    re.I,
+)
+
+
+def _is_stated_pay(text: str, match: re.Match[str]) -> bool:
+    """A rupee amount next to CTC or a stipend is pay, not a demand for a fee."""
+    left = max(0, match.start() - 72)
+    right = min(len(text), match.end() + 72)
+    window = text[left:right]
+    return PAY_CONTEXT.search(window) is not None and FEE_CONTEXT.search(window) is None
+
+
+def _first_match(pattern: Pattern, text: str) -> re.Match[str] | None:
+    for match in pattern.regex.finditer(text):
+        if pattern.id == "upfront_payment" and _is_stated_pay(text, match):
+            continue
+        return match
+    return None
+
+
 def extract_signals(text: str) -> tuple[list[dict], list[dict]]:
     risks: list[dict] = []
     supports: list[dict] = []
     seen: set[str] = set()
 
     for pattern in PATTERNS:
-        match = pattern.regex.search(text)
+        match = _first_match(pattern, text)
         if not match or pattern.id in seen:
             continue
         seen.add(pattern.id)

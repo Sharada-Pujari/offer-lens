@@ -19,7 +19,7 @@ The chat remembers the offer you just checked. It does not search the web, and i
 
 1. A TF-IDF model (word and two-word phrases) plus logistic regression scores the whole message. Training text is in `data/corpus.py`. Those messages were written for this project. They imitate real patterns. They are not copied from anyone's private chats.
 2. Pattern checks quote lines a person can see: a fee, an identity document, a free email domain, a placement-office process, and similar signs.
-3. The model is the main label. If the message contains a high-risk line, the result is held back from "credible". Two high-risk lines can hold an unsure result at "risky".
+3. The model is the main label. If the message contains a high-risk line, the result is held back from "credible". Two high-risk lines can hold an unsure result at "risky". A salary, CTC, or monthly stipend is pay for the role, not a fee. A service bond is quoted on its own and does not, by itself, force the label to risky.
 
 `models/metrics.json` records two checks, then the shipped model is fit on the full composed set:
 
