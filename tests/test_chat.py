@@ -37,6 +37,45 @@ def test_draft_refuses_payment_on_a_risky_offer():
     assert "Hello" in reply
 
 
+DRIVE = (
+    "Company: L&T Technology Services. Role: Associate Engineer Trainee. "
+    "CTC: ₹4 LPA. packege : ₹25,000/month for the first 3 months. "
+    "Locations: Hyderabad, Pune and Mumbai. "
+    "Eligibility Criteria: Minimum 60% or 6.75 CGPA. "
+    "Selection Process: Technical Interview and HR Interview. "
+    "Mandatory undertaking/bond of ₹2 Lakhs for 2 years. "
+    "Last Date to Apply: 30 November 2026."
+)
+
+
+def test_stipend_question_quotes_the_pay_and_not_a_fee():
+    reply = answer(_analysis("credible"), "what is the stipend?", DRIVE)
+    assert "25,000" in reply
+    assert "not a fee" in reply
+    assert "marked credible" in reply
+
+
+def test_other_questions_are_not_copies_of_each_other():
+    analysis = _analysis("credible")
+    analysis["risk_signals"] = [
+        {
+            "id": "service_bond",
+            "severity": "medium",
+            "title": "Mentions a service bond",
+            "detail": "Read the amount and the duration.",
+            "excerpt": "bond of ₹2 Lakhs",
+        }
+    ]
+    apply = answer(analysis, "Should I apply?", DRIVE)
+    legit = answer(analysis, "is it legit", DRIVE)
+    bond = answer(analysis, "what about the bond?", DRIVE)
+    places = answer(analysis, "which city?", DRIVE)
+    assert apply != legit
+    assert "2 Lakhs" in bond
+    assert "Hyderabad" in places
+    assert bond != apply
+
+
 def test_clear_process_still_points_at_the_official_route():
     reply = answer(_analysis("credible"), "Should I apply?")
     assert "marked credible" in reply

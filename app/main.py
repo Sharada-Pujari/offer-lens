@@ -110,7 +110,7 @@ def chat(body: ChatRequest):
     stored = app.state.sessions.get(body.session_id)
     if stored is None:
         raise HTTPException(status_code=404, detail="Check an offer before asking about it.")
-    reply = answer(stored["analysis"], body.message.strip())
+    reply = answer(stored["analysis"], body.message.strip(), stored["text"])
     app.state.sessions.add_message(body.session_id, "user", body.message.strip())
     app.state.sessions.add_message(body.session_id, "assistant", reply)
     return {
