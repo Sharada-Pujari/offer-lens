@@ -41,7 +41,7 @@ button, textarea, input { font: inherit; color: inherit; }
   border: 0;
 }
 
-.top, main, footer { width: min(1120px, calc(100% - 32px)); margin-inline: auto; }
+.top, main, footer { width: min(1440px, calc(100% - 24px)); margin-inline: auto; }
 
 .top {
   display: flex;
@@ -76,19 +76,27 @@ button, textarea, input { font: inherit; color: inherit; }
   text-transform: uppercase;
 }
 
-.intro { padding: 28px 0 18px; max-width: 740px; }
+.intro { padding: 8px 0 12px; }
 
 h1, h2, h3 { font-family: "Fraunces", Georgia, serif; font-weight: 560; letter-spacing: -0.03em; }
 
-h1 { margin: 0; font-size: clamp(2.4rem, 5vw, 4.4rem); line-height: 0.98; }
+h1 { margin: 0; font-size: clamp(1.7rem, 2.2vw, 2.3rem); line-height: 1.05; }
 
-.deck { margin: 16px 0 0; font-size: 1.08rem; max-width: 62ch; }
+.deck { margin: 8px 0 0; font-size: 1rem; max-width: 70ch; }
 
 .layout {
   display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  gap: 22px;
+  grid-template-columns: minmax(340px, 0.82fr) minmax(420px, 1.18fr);
+  gap: 14px;
   align-items: start;
+}
+
+.column {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  position: sticky;
+  top: 12px;
 }
 
 .sheet, .finding, .chat {
@@ -98,7 +106,7 @@ h1 { margin: 0; font-size: clamp(2.4rem, 5vw, 4.4rem); line-height: 0.98; }
   box-shadow: var(--shadow);
 }
 
-.sheet, .finding { padding: 22px; }
+.sheet, .finding { padding: 16px 18px; }
 
 .sheet-head h2, .waiting h2, .chat h2 { margin: 0; font-size: 1.7rem; }
 
@@ -130,7 +138,7 @@ textarea, input {
   padding: 14px 16px;
 }
 
-textarea { resize: vertical; min-height: 240px; line-height: 1.55; }
+textarea { resize: vertical; min-height: 280px; line-height: 1.45; }
 
 textarea:focus, input:focus, button:focus-visible {
   outline: 2px solid #c47a3a;
@@ -201,7 +209,7 @@ textarea:focus, input:focus, button:focus-visible {
 .track.unclear span { background: var(--mid); }
 .track.credible span { background: var(--ok); }
 
-.group { margin-top: 18px; }
+.group { margin-top: 12px; }
 
 .group h3 { margin: 0 0 8px; font-size: 1.25rem; }
 
@@ -243,11 +251,11 @@ blockquote {
 
 .check strong { font-weight: 600; }
 
-.chat { margin: 22px 0 10px; padding: 22px; }
+.chat { margin: 0; padding: 16px 18px; }
 
-.chat-head { display: flex; justify-content: space-between; gap: 18px; align-items: end; }
+.chat-head { display: flex; justify-content: space-between; gap: 12px; align-items: end; }
 
-.chat-context { max-width: 42ch; margin: 0; }
+.chat-context { margin: 8px 0 0; }
 
 .thread { display: grid; gap: 10px; margin-top: 16px; }
 
@@ -265,6 +273,11 @@ footer { padding: 8px 0 36px; color: var(--muted); font-size: 0.92rem; }
 
 @media (max-width: 860px) {
   .layout, .chat-head, .score-row, .sheet-actions, .ask { display: grid; }
+  .layout { grid-template-columns: 1fr; }
+  .column { position: static; display: contents; }
+  .sheet { order: 1; }
+  .finding { order: 2; }
+  .chat { order: 3; }
   .bar { grid-template-columns: 78px 1fr 42px; }
   .bubble.user { justify-self: stretch; }
 }

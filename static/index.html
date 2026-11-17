@@ -24,13 +24,12 @@
       <p class="kicker">Placement offer check</p>
       <h1>Read the offer before you answer it.</h1>
       <p class="deck">
-        Campus chats fill up with copied job posts, fee requests, and messages that
-        want an Aadhaar photo today. Paste the message. Offer Lens scores it, quotes
-        the lines that matter, and stays with that offer while you decide.
+        Paste the message. The score follows the lines in it: role, pay, eligibility, rounds, and where to apply.
       </p>
     </section>
 
     <section class="layout">
+      <div class="column">
       <form id="checker" class="sheet">
         <div class="sheet-head">
           <h2>The message</h2>
@@ -46,6 +45,29 @@
         <p id="form-error" class="form-error" hidden></p>
       </form>
 
+      <section class="chat" id="chat" hidden>
+        <div class="chat-head">
+          <div>
+            <p class="kicker">Same offer</p>
+            <h2>Ask before you reply.</h2>
+          </div>
+        </div>
+        <p id="chat-context" class="chat-context"></p>
+        <div id="thread" class="thread"></div>
+        <div class="prompts" id="prompts">
+          <button type="button" data-ask="Should I apply?">Should I apply?</button>
+          <button type="button" data-ask="Why was this flagged?">Why was this flagged?</button>
+          <button type="button" data-ask="What should I verify?">What should I verify?</button>
+          <button type="button" data-ask="Draft a reply">Draft a reply</button>
+        </div>
+        <form id="ask" class="ask">
+          <label class="sr" for="question">Question about this offer</label>
+          <input id="question" name="question" type="text" maxlength="1000" placeholder="Ask about this offer" autocomplete="off">
+          <button class="primary" type="submit">Send</button>
+        </form>
+      </section>
+      </div>
+
       <section class="finding" id="finding" aria-live="polite">
         <div class="waiting" id="waiting">
           <p class="kicker">The finding</p>
@@ -54,28 +76,6 @@
         </div>
         <div id="result" hidden></div>
       </section>
-    </section>
-
-    <section class="chat" id="chat" hidden>
-      <div class="chat-head">
-        <div>
-          <p class="kicker">Same offer</p>
-          <h2>Ask before you reply.</h2>
-        </div>
-        <p id="chat-context" class="chat-context"></p>
-      </div>
-      <div id="thread" class="thread"></div>
-      <div class="prompts" id="prompts">
-        <button type="button" data-ask="Should I apply?">Should I apply?</button>
-        <button type="button" data-ask="Why was this flagged?">Why was this flagged?</button>
-        <button type="button" data-ask="What should I verify?">What should I verify?</button>
-        <button type="button" data-ask="Draft a reply">Draft a reply</button>
-      </div>
-      <form id="ask" class="ask">
-        <label class="sr" for="question">Question about this offer</label>
-        <input id="question" name="question" type="text" maxlength="1000" placeholder="Ask about this offer" autocomplete="off">
-        <button class="primary" type="submit">Send</button>
-      </form>
     </section>
   </main>
 
