@@ -64,7 +64,8 @@ DRIVE = (
     "Locations: Hyderabad, Pune, Mumbai, Vadodara and Delhi. "
     "Eligibility Criteria: Minimum 60% or 6.75 CGPA in 10th, 12th and Graduation. "
     "No active backlogs. Selection Process: 1. Technical Interview 2. HR Interview. "
-    "Mandatory undertaking/bond of ₹2 Lakhs for 2 years and 9 months."
+    "Mandatory undertaking/bond of ₹2 Lakhs for 2 years and 9 months. "
+    "Last Date to Apply: 30 November 2026."
 )
 
 
@@ -75,7 +76,15 @@ def test_stipend_and_ctc_are_not_a_fee():
     assert risk_ids["service_bond"] == "medium"
     assert "25,000" not in next(item["excerpt"] for item in risks if item["id"] == "service_bond")
     support_ids = {item["id"] for item in supports}
-    assert {"compensation_stated", "eligibility_stated", "named_rounds", "careers_portal"} <= support_ids
+    assert {
+        "compensation_stated",
+        "eligibility_stated",
+        "named_rounds",
+        "careers_portal",
+        "role_stated",
+        "locations_stated",
+        "deadline_stated",
+    } <= support_ids
     label, note = decide("credible", risks)
     assert label == "credible"
     assert note is None

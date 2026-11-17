@@ -213,6 +213,33 @@ PATTERNS: tuple[Pattern, ...] = (
         ),
         kind="support",
     ),
+    Pattern(
+        id="role_stated",
+        severity="info",
+        title="Names the role",
+        detail="A named role and a full-time or trainee label read like a real opening.",
+        regex=re.compile(
+            r"\brole\b|job type|full-time|full time|associate engineer|trainee",
+            re.I,
+        ),
+        kind="support",
+    ),
+    Pattern(
+        id="locations_stated",
+        severity="info",
+        title="States the locations",
+        detail="A list of cities is part of a normal drive notice. The final city can still change.",
+        regex=re.compile(r"\blocations?\b", re.I),
+        kind="support",
+    ),
+    Pattern(
+        id="deadline_stated",
+        severity="info",
+        title="States a last date",
+        detail="A last date to apply is a deadline, not same-day pressure to pay.",
+        regex=re.compile(r"last date|apply by|deadline", re.I),
+        kind="support",
+    ),
 )
 
 
