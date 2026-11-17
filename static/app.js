@@ -115,13 +115,14 @@ async function analyse(raw) {
 function render(payload, body) {
   waiting.hidden = true;
   result.hidden = false;
-  const percent = Math.round(payload.confidence * 100);
+  const percent = Math.round((payload.score ?? payload.confidence) * 100);
+  const shares = payload.shares || payload.probabilities;
   const order = ["risky", "unclear", "credible"];
   result.innerHTML = `
     <div class="score-row">
       <div>
         <p class="stamp ${escapeHtml(payload.label)}">${labels[payload.label]}</p>
-        <p class="confidence">${percent}<span> / 100 model weight</span></p>
+        <p class="confidence">${percent}<span> / 100 offer score</span></p>
       </div>
     </div>
     <p class="summary">${escapeHtml(payload.summary)}</p>
@@ -130,8 +131,8 @@ function render(payload, body) {
       ${order.map((label) => `
         <div class="bar">
           <span>${labels[label]}</span>
-          <div class="track ${label}"><span style="width:${Math.round((payload.probabilities[label] || 0) * 100)}%"></span></div>
-          <span>${Math.round((payload.probabilities[label] || 0) * 100)}%</span>
+          <div class="track ${label}"><span style="width:${Math.round((shares[label] || 0) * 100)}%"></span></div>
+          <span>${Math.round((shares[label] || 0) * 100)}%</span>
         </div>
       `).join("")}
     </div>
