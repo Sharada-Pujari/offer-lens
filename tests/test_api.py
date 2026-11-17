@@ -94,3 +94,27 @@ def test_chat_without_an_offer_is_rejected():
 def test_empty_message_is_rejected():
     response = request("POST", "/api/analyze", json={"text": "   "})
     assert response.status_code == 422
+
+
+DRIVE = (
+    "L&T Technology Services has officially opened its GET Off Campus Drive 2026 "
+    "through Superset. Role: Associate Engineer Trainee. CTC: ₹4 LPA. "
+    "packege : ₹25,000/month for the first 3 months. Job Type: Full-Time. "
+    "Locations: Bangalore, Chennai, Mysore, Hyderabad, Pune, Mumbai, Vadodara & Delhi. "
+    "Eligibility Criteria: Minimum 60% or 6.75 CGPA in 10th, 12th & Graduation. "
+    "No active backlogs. Must clear final-year examinations in the first attempt. "
+    "Selection Process: 1. Technical Interview 2. HR Interview. "
+    "3 months of classroom training followed by 12 months of on-the-job training. "
+    "Mandatory undertaking/bond of ₹2 Lakhs for 2 years and 9 months. "
+    "Last Date to Apply: 30 November 2026."
+)
+
+
+def test_complete_off_campus_drive_scores_with_the_notice():
+    response = request("POST", "/api/analyze", json={"text": DRIVE})
+    body = response.json()
+    assert response.status_code == 200
+    assert body["label"] == "credible"
+    assert body["score"] >= 0.85
+    assert body["shares"]["credible"] == body["score"]
+    assert body["confidence"] < body["score"]

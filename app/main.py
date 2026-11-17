@@ -14,6 +14,7 @@ from app import __version__
 from app.chat import answer
 from app.decide import checklist, decide, summary
 from app.predictor import Predictor
+from app.score import offer_score
 from app.sessions import SessionStore
 from app.signals import extract_signals
 
@@ -61,11 +62,14 @@ def build_analysis(predictor: Predictor, text: str) -> dict:
     model_label, confidence, probabilities, cues = predictor.predict(text)
     risks, supports = extract_signals(text)
     label, note = decide(model_label, risks)
+    score, shares = offer_score(label, probabilities, risks, supports)
     return {
         "label": label,
         "model_label": model_label,
         "confidence": round(confidence, 3),
+        "score": score,
         "probabilities": {key: round(value, 3) for key, value in probabilities.items()},
+        "shares": shares,
         "override_note": note,
         "summary": summary(label),
         "risk_signals": risks,
