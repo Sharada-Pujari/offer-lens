@@ -187,6 +187,10 @@ textarea:focus, input:focus, button:focus-visible {
 
 .confidence span { font-family: "Outfit", sans-serif; font-size: 0.95rem; color: var(--muted); }
 
+.score-note { margin: 6px 0 0; color: var(--muted); font-size: 0.92rem; }
+
+.score-note { margin: 6px 0 0; color: var(--muted); font-size: 0.92rem; }
+
 .summary { font-size: 1.05rem; }
 
 .note {

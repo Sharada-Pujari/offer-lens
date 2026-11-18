@@ -123,6 +123,8 @@ function render(payload, body) {
       <div>
         <p class="stamp ${escapeHtml(payload.label)}">${labels[payload.label]}</p>
         <p class="confidence">${percent}<span> / 100 offer score</span></p>
+        <p class="score-note">Each quoted line moves this number.</p>
+        <p class="score-note">Each quoted line moves this number.</p>
       </div>
     </div>
     <p class="summary">${escapeHtml(payload.summary)}</p>
