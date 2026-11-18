@@ -115,6 +115,6 @@ def test_complete_off_campus_drive_scores_with_the_notice():
     body = response.json()
     assert response.status_code == 200
     assert body["label"] == "credible"
-    assert body["score"] >= 0.85
+    assert body["score"] > body["confidence"] + 0.2
     assert body["shares"]["credible"] == body["score"]
-    assert body["confidence"] < body["score"]
+    assert body["score"] < 0.96

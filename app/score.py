@@ -1,33 +1,64 @@
-"""Turn a label and the quoted lines into the number on the page.
+"""Turn the message itself into the number on the page.
 
-The text model scores three classes at once. On a long official notice it
-often peaks near 0.4 even when credible is the winner, because ordinary
-words are shared. The page should move with the lines a student can see:
-a named role, pay, eligibility, rounds, locations, a last date, and an
-official form raise the score. A service bond steps it down. A fee or an
-identity request stays in the risky range.
+The text model scores three classes at once. On a long notice those three
+shares often sit near 40 percent even when the label is right, so two
+different offers were showing 44 and 42. The offer score counts the facts
+in the message. A role, pay, an eligibility line, rounds, cities, a last
+date, and an official form each add a step. A service bond takes a step
+off. The model still nudges the result, so the same facts in different
+wording do not land on one identical number.
 """
 
 from __future__ import annotations
 
-from app.decide import LABELS
+import re
 
-SUPPORT_POINTS = {
-    "official_process": 0.07,
-    "eligibility_stated": 0.07,
-    "named_rounds": 0.07,
-    "careers_portal": 0.07,
-    "compensation_stated": 0.06,
-    "no_fee_stated": 0.05,
-    "company_domain": 0.04,
-    "role_stated": 0.04,
-    "locations_stated": 0.04,
-    "deadline_stated": 0.04,
-}
+from app.decide import LABELS
+from app.signals import EMAIL_RE, FREEMAIL
+
+# Points for a fact a reader can see. The total is the scale, not a cap
+# that every complete notice hits.
+FACTS: tuple[tuple[str, int, re.Pattern[str]], ...] = (
+    ("role", 10, re.compile(r"\brole\b|job type|full-time|full time|\btrainee\b|\binternship\b", re.I)),
+    ("pay", 12, re.compile(r"\b(?:ctc|stipend|salary|lpa|package|packege)\b|/month|per month", re.I)),
+    ("amount", 6, re.compile(r"(?:₹|rs\.?|inr)\s?\d|\d+(?:\.\d+)?\s*lpa|\d[\d,]+\s*(?:/month|per month)", re.I)),
+    ("eligibility", 10, re.compile(r"eligib|\bcgpa\b|backlogs?|%", re.I)),
+    ("criteria_number", 4, re.compile(r"\d+(?:\.\d+)?\s*(?:%|cgpa)|\bcgpa\s*\d", re.I)),
+    ("rounds", 10, re.compile(r"interview|technical round|online test|selection process|hr round", re.I)),
+    ("second_round", 5, re.compile(r"technical.+hr|hr.+technical", re.I)),
+    ("locations", 8, re.compile(r"\blocations?\b", re.I)),
+    ("deadline", 6, re.compile(r"last date|apply by|deadline", re.I)),
+    ("portal", 10, re.compile(r"superset|careers (?:page|portal)|placement (?:office|cell)|college email", re.I)),
+    ("no_fee", 5, re.compile(r"no fees?|does not charge|do not pay|no payment|no deposit|without a (?:fee|payment)", re.I)),
+)
+CITY_RE = re.compile(
+    r"\b(?:bangalore|bengaluru|chennai|mysore|mysuru|hyderabad|pune|mumbai|"
+    r"vadodara|delhi|noida|gurgaon|gurugram|kolkata|ahmedabad)\b",
+    re.I,
+)
+POINT_SCALE = sum(points for _name, points, _pattern in FACTS) + 4 + 5
 
 
 def _clip(value: float, low: float, high: float) -> float:
     return max(low, min(high, value))
+
+
+def evidence_points(text: str) -> int:
+    if not text:
+        return 0
+    total = 0
+    for _name, points, pattern in FACTS:
+        if pattern.search(text):
+            total += points
+    cities = {match.group(0).lower() for match in CITY_RE.finditer(text)}
+    if len(cities) >= 3:
+        total += 4
+    for match in EMAIL_RE.finditer(text):
+        domain = match.group(0).split("@", 1)[1].lower()
+        if domain not in FREEMAIL:
+            total += 5
+            break
+    return total
 
 
 def offer_score(
@@ -35,24 +66,33 @@ def offer_score(
     probabilities: dict[str, float],
     risks: list[dict],
     supports: list[dict],
+    text: str = "",
 ) -> tuple[float, dict[str, float]]:
     if label not in LABELS:
         raise ValueError(f"Unknown label: {label}")
 
     high = [item for item in risks if item.get("severity") == "high"]
-    medium = [item for item in risks if item.get("severity") == "medium"]
-    boost = sum(SUPPORT_POINTS.get(item.get("id"), 0.03) for item in supports)
+    medium = [item for item in risks if item.get("severity") == "medium" and item.get("id") != "service_bond"]
+    bond = any(item.get("id") == "service_bond" for item in risks)
+    coverage = evidence_points(text) / POINT_SCALE
+    # Quoted support lines still count when the wording is too short for a fact regex.
+    if supports and coverage < 0.15:
+        coverage = min(0.15, 0.04 * len(supports))
     model = float(probabilities.get(label, 0.0))
+    nudge = 0.08 * (model - 0.5)
 
     if label == "risky":
-        shown = _clip(max(model, 0.72) + 0.05 * len(high) + 0.03 * len(medium), 0.72, 0.96)
+        shown = 0.70 + 0.06 * len(high) + 0.03 * len(medium) + nudge
+        shown = _clip(shown, 0.68, 0.97)
     elif label == "unclear":
-        shown = _clip(0.38 + min(boost, 0.16) * 0.4 - 0.04 * len(high), 0.34, 0.58)
-    elif boost < 0.12:
-        shown = _clip(max(model, 0.48), 0.45, 0.64)
+        shown = 0.32 + 0.28 * coverage + nudge
+        shown = _clip(shown, 0.28, 0.58)
     else:
-        ceiling = 0.92 if medium else 0.96
-        shown = _clip(0.64 + min(boost, 0.30) - 0.04 * len(medium), 0.70, ceiling)
+        shown = 0.56 + 0.38 * coverage + nudge
+        if bond:
+            shown -= 0.08
+        shown -= 0.03 * len(medium)
+        shown = _clip(shown, 0.55, 0.96)
 
     shown = round(shown, 3)
     return shown, _shares(label, shown, probabilities)

@@ -62,7 +62,7 @@ def build_analysis(predictor: Predictor, text: str) -> dict:
     model_label, confidence, probabilities, cues = predictor.predict(text)
     risks, supports = extract_signals(text)
     label, note = decide(model_label, risks)
-    score, shares = offer_score(label, probabilities, risks, supports)
+    score, shares = offer_score(label, probabilities, risks, supports, text)
     return {
         "label": label,
         "model_label": model_label,
