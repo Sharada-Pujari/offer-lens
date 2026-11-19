@@ -90,7 +90,43 @@ def test_stipend_and_ctc_are_not_a_fee():
     assert note is None
 
 
+def test_a_denied_registration_fee_is_not_a_demand():
+    text = (
+        "Placement cell circular. Eligibility CGPA 6.5. Online test and HR round. "
+        "The company does not charge any registration fee. Apply on Superset."
+    )
+    risks, supports = extract_signals(text)
+    assert "upfront_payment" not in {item["id"] for item in risks}
+    assert "no_fee_stated" in {item["id"] for item in supports}
+    label, note = decide("credible", risks)
+    assert label == "credible"
+    assert note is None
+
+
+def test_a_fee_after_a_denial_is_still_a_demand():
+    text = "There is no fee. Pay the refundable registration fee of Rs 500."
+    risks, _supports = extract_signals(text)
+    assert "upfront_payment" in {item["id"] for item in risks}
+
+
 def test_model_label_stands_when_nothing_high_is_quoted():
     label, note = decide("credible", [])
     assert label == "credible"
     assert note is None
+
+
+def test_a_pay_notice_without_a_demand_is_not_left_risky():
+    supports = [
+        {"id": "compensation_stated", "severity": "info"},
+        {"id": "locations_stated", "severity": "info"},
+        {"id": "deadline_stated", "severity": "info"},
+    ]
+    label, note = decide("risky", [], supports)
+    assert label == "credible"
+    assert note
+
+
+def test_a_risky_model_with_no_lines_stays_unsure():
+    label, note = decide("risky", [])
+    assert label == "unclear"
+    assert note

@@ -290,9 +290,26 @@ def _is_stated_pay(text: str, match: re.Match[str]) -> bool:
     return PAY_CONTEXT.search(window) is not None and FEE_CONTEXT.search(window) is None
 
 
+NEGATED_FEE = re.compile(
+    r"\b(?:no|not|without|never|dont|don't|does not|do not|will not|won't)\b",
+    re.I,
+)
+
+
+def _fee_is_denied(text: str, match: re.Match[str]) -> bool:
+    """A fee phrase after 'no' or 'does not' is a denial, not a demand."""
+    left = max(0, match.start() - 42)
+    window = text[left:match.start()]
+    if re.search(r"[.!?]", window):
+        window = re.split(r"[.!?]", window)[-1]
+    if re.search(r"\b(?:pay|deposit|transfer|send)\b", window, re.I):
+        return False
+    return NEGATED_FEE.search(window) is not None
+
+
 def _first_match(pattern: Pattern, text: str) -> re.Match[str] | None:
     for match in pattern.regex.finditer(text):
-        if pattern.id == "upfront_payment" and _is_stated_pay(text, match):
+        if pattern.id == "upfront_payment" and (_is_stated_pay(text, match) or _fee_is_denied(text, match)):
             continue
         return match
     return None

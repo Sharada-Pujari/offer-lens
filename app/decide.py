@@ -10,9 +10,39 @@ from __future__ import annotations
 LABELS = ("risky", "unclear", "credible")
 
 
-def decide(model_label: str, risk_signals: list[dict]) -> tuple[str, str | None]:
+PROCESS_SUPPORT = {
+    "compensation_stated",
+    "official_process",
+    "eligibility_stated",
+    "named_rounds",
+    "careers_portal",
+    "role_stated",
+    "locations_stated",
+    "deadline_stated",
+    "no_fee_stated",
+}
+
+
+def decide(
+    model_label: str,
+    risk_signals: list[dict],
+    support_signals: list[dict] | None = None,
+) -> tuple[str, str | None]:
     if model_label not in LABELS:
         raise ValueError(f"Unknown model label: {model_label}")
+
+    support_signals = support_signals or []
+    if model_label == "risky" and not risk_signals:
+        found = {item.get("id") for item in support_signals} & PROCESS_SUPPORT
+        if len(found) >= 2:
+            return (
+                "credible",
+                "The model leaned risky, but the message states a role or a process and does not ask for a fee or documents.",
+            )
+        return (
+            "unclear",
+            "The model leaned risky, but the message does not ask for a fee, documents, or a payment.",
+        )
 
     high = [item for item in risk_signals if item.get("severity") == "high"]
     if not high:
