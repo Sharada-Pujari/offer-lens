@@ -20,12 +20,13 @@ The chat remembers the offer you just checked. It does not search the web, and i
 1. A TF-IDF model (word and two-word phrases) plus logistic regression scores the whole message. Training text is in `data/corpus.py`. Those messages were written for this project. They imitate real patterns. They are not copied from anyone's private chats.
 2. Pattern checks quote lines a person can see: a fee, an identity document, a free email domain, a placement-office process, and similar signs.
 3. The model is the main label. If the message contains a high-risk line, the result is held back from "credible". Two high-risk lines can hold an unsure result at "risky". A salary, CTC, or monthly stipend is pay for the role, not a fee. A service bond is quoted on its own and does not, by itself, force the label to risky.
-4. The offer score on the page is not the raw class percentage. A long notice can split near 40 percent across the three classes even when the label is credible, which is why different offers were showing 44 and 42. Each fact in the message moves the score: a role, pay, eligibility, rounds, cities, a last date, or an official form. A service bond lowers it. A fee or an identity request keeps the score on the risky side. The model still nudges the number, so the same checklist in different wording does not land on one identical score.
+4. Two exception cases are handled on purpose. "No registration fee" or "does not charge a fee" is not read as a demand. A later line that does ask for a fee still is. If the model says risky but the message never asks for a fee, documents, or a payment, the label is not left at risky. A notice that states a role, pay, or a process is kept as a normal offer.
+5. The offer score on the page is not the raw class percentage. A long notice can split near 40 percent across the three classes even when the label is credible, which is why different offers were showing 44 and 42. Each fact in the message moves the score: a role, pay, eligibility, rounds, cities, a last date, or an official form. A service bond lowers it. A fee or an identity request keeps the score on the risky side. The model still nudges the number, so the same checklist in different wording does not land on one identical score.
 
 `models/metrics.json` records two checks, then the shipped model is fit on the full composed set:
 
-- Holdout: 25% of the composed messages, macro F1 1.00 on 19 messages.
-- Unseen: 8 messages in `data/eval_set.py` that are not in training, 8 of 8.
+- Holdout: 25% of the composed messages, macro F1 0.947 on 21 messages. One unclear message in that split was read as credible.
+- Unseen: 11 messages in `data/eval_set.py` that are not in training, 11 of 11. Three of those are the exception cases: a salary notice, a denied registration fee, and a fee that follows the words "no fee".
 
 Those messages were written with distinct, obvious wording, so the scores show that the pipeline separates this set. They are not a measure of every chat a student will receive. New wording can slip through, and a short note from a real startup can look thin. Confirm the offer with your placement office.
 
