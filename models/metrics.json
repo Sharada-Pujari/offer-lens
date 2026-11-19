@@ -1,13 +1,13 @@
 {
-  "records": 75,
+  "records": 81,
   "counts": {
-    "risky": 28,
-    "credible": 23,
+    "risky": 30,
+    "credible": 27,
     "unclear": 24
   },
-  "holdout_size": 19,
-  "holdout_macro_f1": 1.0,
-  "holdout_accuracy": 1.0,
+  "holdout_size": 21,
+  "holdout_macro_f1": 0.947,
+  "holdout_accuracy": 0.952,
   "labels": [
     "risky",
     "unclear",
@@ -15,27 +15,27 @@
   ],
   "confusion_matrix": [
     [
-      7,
+      8,
       0,
       0
     ],
     [
       0,
-      6,
-      0
+      5,
+      1
     ],
     [
       0,
       0,
-      6
+      7
     ]
   ],
   "per_label_f1": {
     "risky": 1.0,
-    "unclear": 1.0,
-    "credible": 1.0
+    "unclear": 0.909,
+    "credible": 0.933
   },
-  "unseen_messages": 8,
+  "unseen_messages": 11,
   "unseen_macro_f1": 1.0,
-  "unseen_correct": 8
+  "unseen_correct": 11
 }

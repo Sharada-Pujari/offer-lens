@@ -54,4 +54,25 @@ EVAL_RECORDS: list[dict[str, str]] = [
         "label": "unclear",
         "text": "A senior posted that some firm wants interns. No company name yet.",
     },
+    {
+        "label": "credible",
+        "text": (
+            "Role: Analyst. CTC 6 LPA. Stipend Rs 15000 per month during training. "
+            "Locations: Pune, Bangalore, Chennai. Last date 12 December. No fee is charged."
+        ),
+    },
+    {
+        "label": "credible",
+        "text": (
+            "Placement cell circular. Eligibility CGPA 6.5. Online test and HR round. "
+            "The company does not charge any registration fee. Apply on Superset."
+        ),
+    },
+    {
+        "label": "risky",
+        "text": (
+            "This is a real offer and there is no fee. Pay the refundable registration "
+            "fee of Rs 500 to hr.jobs@gmail.com before the interview."
+        ),
+    },
 ]

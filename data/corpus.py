@@ -615,4 +615,50 @@ RECORDS: list[dict[str, str]] = [
             "you know. They named a studio but did not share a careers link or a process."
         ),
     },
+    {
+        "label": "credible",
+        "text": (
+            "Offer details from the careers portal. Role: Business Analyst. "
+            "CTC is 5.5 LPA. Stipend during the first three months is Rs 18000 per month. "
+            "Locations: Noida, Pune and Hyderabad. Last date to apply is 5 January. "
+            "The company does not charge a fee."
+        ),
+    },
+    {
+        "label": "credible",
+        "text": (
+            "Graduate engineer trainee. Package 4 LPA. Eligibility is 6.5 CGPA with "
+            "no active backlogs. Selection process: technical interview and HR interview. "
+            "Locations: Chennai and Bangalore. Apply by 18 December on the careers page."
+        ),
+    },
+    {
+        "label": "credible",
+        "text": (
+            "The company listed a full-time analyst role. Salary is Rs 22000 per month. "
+            "No fee and no deposit. Interview rounds are an online test and an HR round."
+        ),
+    },
+    {
+        "label": "credible",
+        "text": (
+            "Internship note from placements@harbor.example. Role: QA trainee. "
+            "Stipend Rs 12000 per month. The placement office will share the slot. "
+            "There is no registration fee."
+        ),
+    },
+    {
+        "label": "risky",
+        "text": (
+            "The first line says there is no fee. The next line says pay a refundable "
+            "registration fee of Rs 799 and send an Aadhaar photo on WhatsApp."
+        ),
+    },
+    {
+        "label": "risky",
+        "text": (
+            "The page looks like a careers portal, then it says transfer the token "
+            "amount by UPI tonight or the seat is released."
+        ),
+    },
 ]
